@@ -1,0 +1,4 @@
+@model UniversityCourseEnrollment.Models.ViewModels.TeacherCurrentCoursesViewModel
+@{ ViewData["Title"] = "Teacher Current Courses"; }
+<h1>Current Courses</h1><h2>@Model.TeacherName</h2><p>Courses active today based on their start and end dates.</p>
+<ul class="list-group">@foreach (var course in Model.Courses) { <li class="list-group-item">@course.CourseCode - @course.CourseName (@course.StartDate.ToString("yyyy-MM-dd") to @course.EndDate.ToString("yyyy-MM-dd"))</li>}</ul>

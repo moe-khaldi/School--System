@@ -1,0 +1,39 @@
+@model UniversityCourseEnrollment.Models.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>University Course Enrollment</h1>
+<h1>    </h1>
+
+<h2>Login</h2>
+
+@if (TempData["SuccessMessage"] is string successMessage)
+{
+    <p style="color: green;">@successMessage</p>
+}
+
+<div asp-validation-summary="ModelOnly" style="color: red;"></div>
+
+<form asp-controller="Account" asp-action="Login" method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" style="color: red;"></div>
+
+
+
+   <div>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email" style="color: red;"></span>
+   </div>
+
+    <div>
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" />
+        <span asp-validation-for="Password" style="color: red;"></span>
+    </div>
+
+    <button type="submit">Login</button>
+</form>

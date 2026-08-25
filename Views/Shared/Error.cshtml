@@ -1,0 +1,17 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1 class="text-danger">Something went wrong.</h1>
+<h2 class="text-danger">We could not complete your request.</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    </p>
+}
+
+<p>Please try again. If the problem continues, contact the system administrator.</p>
+<a asp-controller="Home" asp-action="Index" class="btn btn-primary">Return to home</a>

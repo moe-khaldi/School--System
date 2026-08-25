@@ -1,0 +1,6 @@
+@model IEnumerable<UniversityCourseEnrollment.Services.StudentGpaResult>
+@{ ViewData["Title"] = "Honor Board"; }
+<h1>Honor Board</h1><p>Top 10 students ranked by weighted GPA.</p>
+<table class="table table-striped"><thead class="table-dark"><tr><th>Rank</th><th>Student</th><th>University number</th><th>GPA</th><th>Highest grade</th><th>Course</th></tr></thead><tbody>
+@{ var rank = 1; } @foreach (var student in Model) { <tr><td>@rank</td><td>@student.StudentName</td><td>@student.UniversityNumber</td><td>@student.Gpa.ToString("0.00")</td><td>@(student.HighestGrade?.ToString("0.##") ?? "No grade")</td><td>@(student.HighestGradeCourse ?? "-")</td></tr> rank++; }
+</tbody></table>

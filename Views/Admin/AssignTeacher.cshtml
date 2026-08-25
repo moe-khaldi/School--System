@@ -1,0 +1,13 @@
+@model UniversityCourseEnrollment.Models.ViewModels.AssignTeacherViewModel
+@{ ViewData["Title"] = "Assign Teacher"; var courses = (IEnumerable<UniversityCourseEnrollment.Models.Course>)ViewBag.Courses; var teachers = (IEnumerable<UniversityCourseEnrollment.Models.Teacher>)ViewBag.Teachers; }
+
+<h1>Assign Teacher to Course</h1>
+<form asp-action="AssignTeacher" method="post" class="col-md-6">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <label asp-for="CourseId" class="form-label">Course</label>
+    <select asp-for="CourseId" class="form-select"><option value="">Choose a course</option>@foreach (var course in courses) { <option value="@course.CourseId">@course.CourseCode - @course.CourseName</option> }</select>
+    <label asp-for="TeacherId" class="form-label mt-3">Teacher</label>
+    <select asp-for="TeacherId" class="form-select"><option value="">Choose a teacher</option>@foreach (var teacher in teachers) { <option value="@teacher.TeacherId">@teacher.AppUser.FullName</option> }</select>
+    <button class="btn btn-primary mt-3" type="submit">Assign teacher</button>
+</form>

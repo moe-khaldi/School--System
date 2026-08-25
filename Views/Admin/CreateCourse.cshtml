@@ -1,0 +1,15 @@
+@model UniversityCourseEnrollment.Models.Course
+@{ ViewData["Title"] = "Create Course"; }
+
+<h1>Create Course</h1>
+<form asp-action="CreateCourse" method="post" class="row g-3">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-md-4"><label asp-for="CourseCode" class="form-label"></label><input asp-for="CourseCode" class="form-control" /><span asp-validation-for="CourseCode" class="text-danger"></span></div>
+    <div class="col-md-8"><label asp-for="CourseName" class="form-label"></label><input asp-for="CourseName" class="form-control" /><span asp-validation-for="CourseName" class="text-danger"></span></div>
+    <div class="col-12"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control"></textarea></div>
+    <div class="col-md-4"><label asp-for="CreditHours" class="form-label"></label><input asp-for="CreditHours" class="form-control" /><span asp-validation-for="CreditHours" class="text-danger"></span></div>
+    <div class="col-md-4"><label asp-for="StartDate" class="form-label"></label><input asp-for="StartDate" class="form-control" /><span asp-validation-for="StartDate" class="text-danger"></span></div>
+    <div class="col-md-4"><label asp-for="EndDate" class="form-label"></label><input asp-for="EndDate" class="form-control" /><span asp-validation-for="EndDate" class="text-danger"></span></div>
+    <div class="col-12"><button class="btn btn-primary" type="submit">Create course</button> <a asp-action="Dashboard" class="btn btn-secondary">Cancel</a></div>
+</form>

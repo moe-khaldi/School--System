@@ -1,0 +1,6 @@
+@model UniversityCourseEnrollment.Models.ViewModels.TeacherCoursesViewModel
+@{ ViewData["Title"] = "Current Courses"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4"><div><h1>Current Courses</h1><p class="text-muted">Assigned courses running today.</p></div><a asp-action="Dashboard" class="btn btn-outline-secondary">Dashboard</a></div>
+@if (!Model.Courses.Any()) { <div class="alert alert-info">You have no assigned courses running today.</div> }
+else { <div class="list-group">@foreach (var course in Model.Courses) { <a asp-action="CourseStudents" asp-route-id="@course.CourseId" class="list-group-item list-group-item-action"><strong>@course.CourseCode - @course.CourseName</strong><br /><small>@course.StartDate.ToString("yyyy-MM-dd") to @course.EndDate.ToString("yyyy-MM-dd") | @course.Enrollments.Count students</small></a> }</div> }

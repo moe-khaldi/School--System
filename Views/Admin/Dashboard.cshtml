@@ -1,0 +1,51 @@
+@model UniversityCourseEnrollment.Controllers.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h1>Admin Dashboard</h1>
+<p>Welcome, @User.Identity?.Name.</p>
+@if (TempData["SuccessMessage"] is string success) { <div class="alert alert-success">@success</div> }
+@if (TempData["ErrorMessage"] is string error) { <div class="alert alert-danger">@error</div> }
+
+<div class="row g-3">
+    <a asp-controller="Courses" asp-action="Index" class="text-decoration-none text-dark">
+        <div class="card p-3 h-100">
+            <h2>@Model.CourseCount</h2>
+            <span>Courses</span>
+            <small>View all courses</small>
+          
+        </div>
+    </a>
+    <a asp-controller="Admin" asp-action="Teachers" class="text-decoration-none text-dark">
+        <div class="card p-3 h-100">
+            <h2>@Model.TeacherCount</h2>
+            <span>Teachers</span>
+            <small>View all teachers</small>
+        </div>
+    </a>
+    <a asp-controller="Admin" asp-action="Students" class="text-decoration-none text-dark">
+        <div class="card p-3 h-100">
+            <h2>@Model.StudentCount</h2>
+            <span>Students</span>
+            <small>View all students</small>
+        </div>
+    </a>
+    <a asp-controller="Admin" asp-action="Enrollments" class="text-decoration-none text-dark">
+        <div class="card p-3 h-100">
+            <h2>@Model.EnrollmentCount</h2>
+            <span>Enrollments</span>
+            <small>View all enrollments</small>
+        </div>
+    </a>
+</div>
+
+<p class="mt-4">Course management and reporting pages will be added next.</p>
+
+<div class="mt-4 d-flex gap-2 flex-wrap">
+    <a asp-action="CreateCourse" class="btn btn-primary">Create course</a>
+    <a asp-action="AssignTeacher" class="btn btn-outline-primary">Assign teacher</a>
+    <a asp-action="HonorBoard" class="btn btn-outline-primary">Honor board</a>
+    <a asp-action="StudentGpa" class="btn btn-outline-primary">Student GPA</a>
+</div>
