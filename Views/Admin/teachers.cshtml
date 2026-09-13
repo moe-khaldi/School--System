@@ -1,4 +1,4 @@
-@model IEnumerable<UniversityCourseEnrollment.Models.Teacher>
+@model PaginatedList<Teacher>
 
 @{
     ViewData["Title"] = "Teachers";
@@ -10,21 +10,21 @@
         <p class="text-muted mb-0">View the teachers registered in the university system.</p>
     </div>
 
-    <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary">
+    <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary gold-btn">
         Back to dashboard
     </a>
 </div>
 
-<div class="mb-3">
-    <label for="teacherSearch" class="form-label">Search teachers</label>
-    <input id="teacherSearch"
-           type="search"
-           class="form-control"
-           placeholder="Search by name, email, or department..."
-           autocomplete="off" />
-</div>
+<form method="get" asp-action="Teachers" class="mb-3">
+    <label for="search" class="form-label">Search teachers</label>
+    <input id="search" name="search" value="@ViewData["Search"]" type="search"
+           class="form-control" placeholder="Search by name, email, or department..." />
+    <input type="hidden" name="pageSize" value="@Model.PageSize" />
+    <button type="submit" class="btn btn-primary mt-2 gold-btn">Search</button>
+    <a asp-action="Teachers" class="btn btn-outline-secondary mt-2 gold-btn">Clear</a>
+</form>
 
-@if (!Model.Any())
+@if (!Model.Items.Any())
 {
     <div class="alert alert-info">No teachers were found.</div>
 }
@@ -42,7 +42,7 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var teacher in Model)
+                @foreach (var teacher in Model.Items)
                 {
                     <tr>
                         <td>@teacher.AppUser.FullName</td>
@@ -50,7 +50,7 @@ else
                         <td>@(teacher.Department ?? "Not specified")</td>
                         <td>@teacher.CourseTeachers.Count</td>
                         <td>
-                            <a asp-controller="Admin" asp-action="TeacherCurrentCourses" asp-route-id="@teacher.TeacherId" class="btn btn-sm btn-outline-primary">Current courses</a>
+                            <a asp-controller="Admin" asp-action="TeacherCurrentCourses" asp-route-id="@teacher.TeacherId" class="btn btn-sm btn-outline-primary gold-btn">Current courses</a>
                         </td>
                     </tr>
                 }
@@ -59,17 +59,4 @@ else
     </div>
 }
 
-@section Scripts {
-    <script>
-        const searchInput = document.getElementById("teacherSearch");
-        const rows = document.querySelectorAll("#teachersTable tbody tr");
-
-        searchInput?.addEventListener("input", function () {
-            const searchText = this.value.toLowerCase().trim();
-
-            rows.forEach(row => {
-                row.hidden = !row.textContent.toLowerCase().includes(searchText);
-            });
-        });
-    </script>
-}
+<partial name="_Pagination" model="Model" />

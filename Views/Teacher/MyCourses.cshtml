@@ -1,10 +1,10 @@
 @model UniversityCourseEnrollment.Models.ViewModels.TeacherCoursesViewModel
 @{ ViewData["Title"] = "My Courses"; }
 
-<div class="d-flex justify-content-between align-items-center mb-4"><div><h1>My Courses</h1><p class="text-muted">Courses assigned to @Model.TeacherName.</p></div><a asp-action="Dashboard" class="btn btn-outline-secondary">Dashboard</a></div>
+<div class="d-flex justify-content-between align-items-center mb-4"><div><h1>My Courses</h1><p class="text-muted">Courses assigned to @Model.TeacherName.</p></div><a asp-action="Dashboard" class="btn btn-outline-secondary gold-btn">Dashboard</a></div>
 <div class="table-responsive"><table class="table table-striped table-hover"><thead class="table-dark"><tr><th>Code</th><th>Course</th><th>Dates</th><th>Status</th><th>Students</th><th></th></tr></thead><tbody>
 @foreach (var course in Model.Courses)
 {
-    <tr><td>@course.CourseCode</td><td>@course.CourseName</td><td>@course.StartDate.ToString("yyyy-MM-dd") to @course.EndDate.ToString("yyyy-MM-dd")</td><td>@(course.IsCancelled ? "Cancelled" : course.IsActive ? "Active" : "Inactive")</td><td>@course.Enrollments.Count</td><td><a asp-action="CourseStudents" asp-route-id="@course.CourseId" class="btn btn-sm btn-primary">View students</a></td></tr>
+    <tr><td>@course.CourseCode</td><td>@course.CourseName</td><td>@course.StartDate.ToString("yyyy-MM-dd") to @course.EndDate.ToString("yyyy-MM-dd")</td><td>@(course.IsCancelled ? "Cancelled" : course.IsActive ? "Active" : "Inactive")</td><td>@course.Enrollments.Count</td><td><a asp-action="CourseStudents" asp-route-id="@course.CourseId" class="btn btn-sm btn-primary gold-btn">View students</a></td></tr>
 }
 </tbody></table></div>

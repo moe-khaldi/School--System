@@ -2,10 +2,10 @@
 @{ ViewData["Title"] = "Course Students"; }
 
 @if (TempData["SuccessMessage"] is string success) { <div class="alert alert-success">@success</div> }
-<div class="d-flex justify-content-between align-items-center mb-4"><div><h1>@Model.Course.CourseCode - @Model.Course.CourseName</h1><p class="text-muted">Students enrolled in this assigned course.</p></div><a asp-action="MyCourses" class="btn btn-outline-secondary">My courses</a></div>
+<div class="d-flex justify-content-between align-items-center mb-4"><div><h1>@Model.Course.CourseCode - @Model.Course.CourseName</h1><p class="text-muted">Students enrolled in this assigned course.</p></div><a asp-action="MyCourses" class="btn btn-outline-secondary gold-btn">My courses</a></div>
 <div class="table-responsive"><table class="table table-striped table-hover"><thead class="table-dark"><tr><th>Student</th><th>University number</th><th>Status</th><th>Grade</th><th></th></tr></thead><tbody>
 @foreach (var enrollment in Model.Course.Enrollments)
 {
-    <tr><td>@enrollment.Student.AppUser.FullName</td><td>@enrollment.Student.UniversityNumber</td><td>@enrollment.Status</td><td>@(enrollment.Grade?.ToString("0.##") ?? "Not graded")</td><td><a asp-action="UpdateGrade" asp-route-enrollmentId="@enrollment.EnrollmentId" class="btn btn-sm btn-outline-primary">Update grade</a></td></tr>
+    <tr><td>@enrollment.Student.AppUser.FullName</td><td>@enrollment.Student.UniversityNumber</td><td>@enrollment.Status</td><td>@(enrollment.Grade?.ToString("0.##") ?? "Not graded")</td><td><a asp-action="UpdateGrade" asp-route-enrollmentId="@enrollment.EnrollmentId" class="btn btn-sm btn-outline-primary gold-btn">Update grade</a></td></tr>
 }
 </tbody></table></div>

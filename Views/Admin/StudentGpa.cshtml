@@ -2,5 +2,5 @@
 @{ ViewData["Title"] = "Student GPA"; var students = (IEnumerable<UniversityCourseEnrollment.Models.Student>)ViewBag.Students; }
 
 <h1>Student GPA</h1>
-<form method="get" class="row g-2 mb-4"><div class="col-md-6"><select name="studentId" class="form-select"><option value="">Choose a student</option>@foreach (var student in students) { <option value="@student.StudentId" selected="@(student.StudentId == Model.StudentId)">@student.AppUser.FullName - @student.UniversityNumber</option> }</select></div><div class="col-md-2"><button class="btn btn-primary">Calculate</button></div></form>
+<form method="get" class="row g-2 mb-4"><div class="col-md-6"><select name="studentId" class="form-select"><option value="">Choose a student</option>@foreach (var student in students) { <option value="@student.StudentId" selected="@(student.StudentId == Model.StudentId)">@student.AppUser.FullName - @student.UniversityNumber</option> }</select></div><div class="col-md-2"><button class="btn btn-primary gold-btn">Calculate</button></div></form>
 @if (Model.StudentId > 0) { <div class="card p-4"><h2>@Model.StudentName</h2><p>University number: @Model.UniversityNumber</p><p class="display-6">GPA: @Model.Gpa.ToString("0.00")</p><p>Calculated from completed graded enrollments using credit-hour weighting.</p></div> }

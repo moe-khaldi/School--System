@@ -1,0 +1,43 @@
+/* Retain existing card, text and table dimensions during navigation. */
+.page-loading {
+    --skeleton-base: #d5d9df;
+    --skeleton-highlight: #edf0f4;
+    cursor: progress;
+}
+[data-theme="dark"] .page-loading {
+    --skeleton-base: #464b53;
+    --skeleton-highlight: #626974;
+}
+.page-loading :is(.card, .table, .list-group-item) {
+    --skeleton-base: #d5d9df;
+    --skeleton-highlight: #edf0f4;
+}
+.page-loading :is(h1, h2, h3, p, td, th, dt, dd, label, .card > span, .card > a, .btn, .page-link, .list-group-item) {
+    position: relative;
+    overflow: hidden;
+}
+.page-loading :is(h1, h2, h3, p, td, th, dt, dd, label, .card > span, .card > a, .btn, .page-link, .list-group-item)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: 5px;
+    background: linear-gradient(100deg, var(--skeleton-base) 30%, var(--skeleton-highlight) 50%, var(--skeleton-base) 70%);
+    background-size: 250% 100%;
+    animation: skeleton-shimmer 1.5s linear infinite;
+}
+.page-loading :is(.form-control, .form-select) {
+    color: transparent !important;
+    background: var(--skeleton-base);
+    text-shadow: none;
+}
+.page-loading input::placeholder {
+    color: transparent;
+}
+@keyframes skeleton-shimmer {
+    from { background-position: 100% 0; }
+    to { background-position: -100% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .page-loading *::after { animation: none !important; }
+}

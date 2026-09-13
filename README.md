@@ -16,7 +16,8 @@
 -Teacher role can: 
  -Teacher can be assigned many courses
  -Teacher  can see the courses admin added for him, and the students enrolled in these courses
- 
+ -Teacher can view student grades for his course AND update thier grades.
+
  
 
 

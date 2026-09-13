@@ -6,6 +6,7 @@ namespace UniversityCourseEnrollment.Models.ViewModels;
 
 public class CourseDetailsViewModel
 {
+    public PaginatedList<Enrollment> Enrollments { get; set; } = null!;
     public Course Course { get; set; } = null!;
     public decimal? AverageGrade { get; set; }
 }

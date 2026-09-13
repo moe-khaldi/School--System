@@ -23,7 +23,7 @@ public class AdminController : Controller
     }
 
     [HttpGet]
-    public Task<IActionResult> Index() => Dashboard();
+    public IActionResult Index() => RedirectToAction(nameof(Dashboard));
 
     [HttpGet]
     public async Task<IActionResult> Dashboard()
@@ -41,41 +41,53 @@ public class AdminController : Controller
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<IActionResult> Teachers()
+    public async Task<IActionResult> Teachers(string? search, int pageNumber = 1,
+        int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var teachers = await _context.Teachers
-            .Include(t => t.AppUser)
-            .Include(t => t.CourseTeachers)
-                .ThenInclude(ct => ct.Course)
-            .OrderBy(t => t.AppUser.FullName)
-            .ToListAsync();
+        search = search?.Trim();
+        ViewData["Search"] = search;
+        IQueryable<Teacher> query = _context.Teachers.AsNoTracking()
+            .Include(t => t.AppUser).Include(t => t.CourseTeachers);
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(t => t.AppUser.FullName.Contains(search) || t.AppUser.Email.Contains(search) || (t.Department != null && t.Department.Contains(search)));
 
-        return View(teachers);
+        return View(await PaginatedList<Teacher>.CreateAsync(
+            query.OrderBy(t => t.AppUser.FullName).ThenBy(t => t.TeacherId),
+            pageNumber, pageSize, cancellationToken));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<IActionResult> Students()
+    public async Task<IActionResult> Students(string? search, int pageNumber = 1,
+        int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var students = await _context.Students
-            .Include(s => s.AppUser)
-            .Include(s => s.Enrollments)
-            .OrderBy(s => s.AppUser.FullName)
-            .ToListAsync();
-        return View(students);
+        search = search?.Trim();
+        ViewData["Search"] = search;
+        IQueryable<Student> query = _context.Students.AsNoTracking()
+            .Include(s => s.AppUser).Include(s => s.Enrollments);
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(s => s.AppUser.FullName.Contains(search) || s.UniversityNumber.Contains(search) || s.AppUser.Email.Contains(search));
+
+        return View(await PaginatedList<Student>.CreateAsync(
+            query.OrderBy(s => s.AppUser.FullName).ThenBy(s => s.StudentId),
+            pageNumber, pageSize, cancellationToken));
     }
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<IActionResult> Enrollments()
+    public async Task<IActionResult> Enrollments(string? search, int pageNumber = 1,
+        int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var enrollments = await _context.Enrollments
-            .Include(e => e.Student)
-                .ThenInclude(s => s.AppUser)
-            .Include(e => e.Course)
-            .OrderByDescending(e => e.EnrollmentDate)
-            .ToListAsync();
-        return View(enrollments);
+        search = search?.Trim();
+        ViewData["Search"] = search;
+        IQueryable<Enrollment> query = _context.Enrollments.AsNoTracking()
+            .Include(e => e.Student).ThenInclude(s => s.AppUser).Include(e => e.Course);
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(e => e.Student.AppUser.FullName.Contains(search) || e.Course.CourseCode.Contains(search) || e.Course.CourseName.Contains(search));
+
+        return View(await PaginatedList<Enrollment>.CreateAsync(
+            query.OrderByDescending(e => e.EnrollmentDate).ThenBy(e => e.EnrollmentId),
+            pageNumber, pageSize, cancellationToken));
     }
 
     [HttpGet]
@@ -102,15 +114,27 @@ public class AdminController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> CourseDetails(int id)
+    public async Task<IActionResult> CourseDetails(int id, int pageNumber = 1,
+        int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var course = await _courseService.GetCourseDetails(id);
+        var course = await _context.Courses.AsNoTracking()
+            .Include(c => c.CourseTeachers)
+                .ThenInclude(ct => ct.Teacher)
+                    .ThenInclude(t => t.AppUser)
+            .FirstOrDefaultAsync(c => c.CourseId == id, cancellationToken);
         if (course is null) return NotFound();
+
+        var enrollments = _context.Enrollments.AsNoTracking()
+            .Where(e => e.CourseId == id)
+            .Include(e => e.Student).ThenInclude(s => s.AppUser)
+            .OrderBy(e => e.Student.AppUser.FullName).ThenBy(e => e.EnrollmentId);
 
         return View(new CourseDetailsViewModel
         {
             Course = course,
-            AverageGrade = await _courseService.GetCourseAverage(id)
+            AverageGrade = await _courseService.GetCourseAverage(id),
+            Enrollments = await PaginatedList<Enrollment>.CreateAsync(
+                enrollments, pageNumber, pageSize, cancellationToken)
         });
     }
 

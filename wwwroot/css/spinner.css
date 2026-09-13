@@ -1,0 +1,32 @@
+.loading-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(20, 20, 20, 0.85);
+  display: none;              /* hidden by default */
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-overlay.active {
+  display: flex;               /* shown when this class is toggled on */
+}
+
+
+ .loading-spinner {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    animation: spin 1.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading-spinner {
+        animation: none;
+    }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

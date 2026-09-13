@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <script src="~/js/theme.js" asp-append-version="true"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin - UniversityCourseEnrollment</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/UniversityCourseEnrollment.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/skeleton.css" asp-append-version="true" />
+    <link rel="stylesheet" href ="~/css/spinner.css" asp-append-version="true"/>
+</head>
+<body class="admin-shell">
+    <div id="loadingOverlay" class="loading-overlay"
+     role="status" aria-label="Loading page">
+    <img src="~/images/JODDBstar.png"
+         asp-append-version="true"
+         alt=""
+         class="loading-spinner" />
+    <span class="visually-hidden">Loading page…</span>
+</div>
+<script src="~/js/spinner.js" asp-append-version="true"></script>
+    <a class="admin-skip-link" href="#admin-main">Skip to content</a>
+    <div class="admin-workspace">
+        <aside class="admin-sidebar" aria-label="Admin sidebar">
+            <a asp-controller="Admin" asp-action="Dashboard" class="admin-brand" aria-label="JODDB admin dashboard">
+                <img src="https://www.joddb.com/uploads/3c891da3-1138-eb11-9240-00155d404d09_63dbb9029a804637a4a62f32f961e2ad.png" alt="JODDB Logo" />
+            </a>
+            <div class="theme-controls"><button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" hidden>Dark theme</button></div>
+    <nav class="admin-navigation" aria-label="Admin navigation">
+                <a class="admin-sidebar-link" asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
+                @{
+                    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+                    var sections = new[]
+                    {
+                        (Title: "Courses", Controller: "Courses", Action: "Index", Option: "Create course", OptionAction: "CreateCourse", Related: new[] { "CreateCourse", "CourseDetails", "CourseAverage" }),
+                        (Title: "Teachers", Controller: "Admin", Action: "Teachers", Option: "Assign teacher", OptionAction: "AssignTeacher", Related: new[] { "Teachers", "AssignTeacher", "TeacherCurrentCourses" }),
+                        (Title: "Students", Controller: "Admin", Action: "Students", Option: "Student GPA", OptionAction: "StudentGpa", Related: new[] { "Students", "StudentGpa", "StudentEnrollments" }),
+                        (Title: "Enrollments", Controller: "Admin", Action: "Enrollments", Option: "Honor board", OptionAction: "HonorBoard", Related: new[] { "Enrollments", "HonorBoard" })
+                    };
+                }
+                @foreach (var item in sections)
+                {
+                    var isCurrent = (currentController == item.Controller && currentAction == item.Action)
+                        || (currentController == "Admin" && item.Related.Contains(currentAction));
+                    <details class="admin-nav-section" open="@isCurrent">
+                        <summary>@item.Title</summary>
+                        <div class="admin-nav-options">
+                            <a class="admin-sidebar-link" asp-controller="@item.Controller" asp-action="@item.Action">View all @item.Title.ToLowerInvariant()</a>
+                            <a class="btn gold-btn" asp-controller="Admin" asp-action="@item.OptionAction">@item.Option</a>
+                        </div>
+                    </details>
+                }
+            </nav>
+            <div class="admin-sidebar-account">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <p class="admin-name">@User.Identity.Name</p>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="login-btn">Logout</button>
+                    </form>
+                }
+                <a class="admin-sidebar-link" href="mailto:moekh.mail@gmail.com">Contact Developer</a>
+            </div>
+        </aside>
+        <div class="admin-page">
+            <main id="admin-main" class="admin-main" tabindex="-1">
+                @RenderBody()
+            </main>
+            <footer class="admin-footer border-top text-muted">
+                &copy; 2026 - UniversityCourseEnrollment - Admin Panel
+            </footer>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

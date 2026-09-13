@@ -1,0 +1,54 @@
+@model IPagination
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var routes = Context.Request.Query.ToDictionary(pair => pair.Key, pair => pair.Value.ToString());
+    foreach (var route in ViewContext.RouteData.Values)
+    {
+        if (route.Key != "controller" && route.Key != "action" && route.Value != null)
+            routes[route.Key] = route.Value.ToString()!;
+    }
+    routes.Remove("pageNumber");
+    routes["pageSize"] = Model.PageSize.ToString();
+}
+
+@if (Model.TotalCount == 0)
+{
+    <p class="text-muted" role="status">No matching records found.</p>
+}
+else
+{
+    <p class="text-muted">
+        Showing @((Model.PageNumber - 1) * Model.PageSize + 1)–@(Math.Min((long)Model.PageNumber * Model.PageSize, Model.TotalCount))
+        of @Model.TotalCount records
+    </p>
+    <nav aria-label="Pagination">
+        <ul class="pagination">
+            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                @if (Model.HasPreviousPage)
+                {
+                    <a class="page-link" asp-controller="@controller" asp-action="@action"
+                       asp-all-route-data="routes" asp-route-pageNumber="@(Model.PageNumber - 1)">Previous</a>
+                }
+                else
+                {
+                    <span class="page-link" aria-disabled="true">Previous</span>
+                }
+            </li>
+            <li class="page-item active">
+                <span class="page-link" aria-current="page">Page @Model.PageNumber of @Model.TotalPages</span>
+            </li>
+            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                @if (Model.HasNextPage)
+                {
+                    <a class="page-link" asp-controller="@controller" asp-action="@action"
+                       asp-all-route-data="routes" asp-route-pageNumber="@(Model.PageNumber + 1)">Next</a>
+                }
+                else
+                {
+                    <span class="page-link" aria-disabled="true">Next</span>
+                }
+            </li>
+        </ul>
+    </nav>
+}

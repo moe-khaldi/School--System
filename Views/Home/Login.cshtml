@@ -4,36 +4,39 @@
     ViewData["Title"] = "Login";
 }
 
-<h1>University Course Enrollment</h1>
-<h1>    </h1>
+<div class="login-page-wrapper">
+    <div class="login-card">
+        <h1 class="Login-title">University Course Enrollment</h1>
 
-<h2>Login</h2>
+        <h2 class="Login-subtitle">Login</h2>
 
-@if (TempData["SuccessMessage"] is string successMessage)
-{
-    <p style="color: green;">@successMessage</p>
-}
+        @if (TempData["SuccessMessage"] is string successMessage)
+        {
+            <p class="text-success">@successMessage</p>
+        }
 
-<div asp-validation-summary="ModelOnly" style="color: red;"></div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-<form asp-controller="Account" asp-action="Login" method="post">
-    @Html.AntiForgeryToken()
+        <form asp-controller="Account" asp-action="Login" method="post" class="login-form">
+            @Html.AntiForgeryToken()
 
-    <div asp-validation-summary="ModelOnly" style="color: red;"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 
 
-   <div>
-        <label asp-for="Email"></label>
-        <input asp-for="Email" />
-        <span asp-validation-for="Email" style="color: red;"></span>
-   </div>
+           <div>
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+           </div>
 
-    <div>
-        <label asp-for="Password"></label>
-        <input asp-for="Password" type="password" />
-        <span asp-validation-for="Password" style="color: red;"></span>
+            <div>
+                <label asp-for="Password"></label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="login-btn" >Login</button>
+        </form>
     </div>
-
-    <button type="submit">Login</button>
-</form>
+</div>

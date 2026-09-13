@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversityCourseEnrollment.Data;
+using UniversityCourseEnrollment.Models;
+using UniversityCourseEnrollment.Models.ViewModels;
 
 namespace UniversityCourseEnrollment.Controllers;
 
@@ -16,16 +18,18 @@ public class CoursesController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? search, int pageNumber = 1,
+        int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var courses = await _context.Courses
-            .Include(c => c.CourseTeachers)
-                .ThenInclude(ct => ct.Teacher)
-                    .ThenInclude(t => t.AppUser)
-            .Include(c => c.Enrollments)
-            .OrderBy(c => c.CourseCode)
-            .ToListAsync();
+        search = search?.Trim();
+        ViewData["Search"] = search;
+        IQueryable<Course> query = _context.Courses.AsNoTracking()
+            .Include(c => c.Enrollments);
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(c => c.CourseCode.Contains(search) || c.CourseName.Contains(search));
 
-        return View(courses);
+        return View(await PaginatedList<Course>.CreateAsync(
+            query.OrderBy(c => c.CourseCode).ThenBy(c => c.CourseId),
+            pageNumber, pageSize, cancellationToken));
     }
 }
