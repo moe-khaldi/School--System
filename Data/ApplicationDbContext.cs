@@ -16,6 +16,17 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Course>().ToTable("Courses", table =>
+        {
+            table.HasCheckConstraint("CK_Courses_CreditHours", "[CreditHours] BETWEEN 1 AND 6");
+            table.HasCheckConstraint("CK_Courses_Dates", "[EndDate] > [StartDate]");
+        });
+        modelBuilder.Entity<Enrollment>().ToTable("Enrollments", table =>
+        {
+            table.HasCheckConstraint("CK_Enrollments_Grade", "[Grade] IS NULL OR [Grade] BETWEEN 0 AND 100");
+            table.HasCheckConstraint("CK_Enrollments_Dates", "[EnrollmentEndDate] > [EnrollmentStartDate]");
+        });
+
         modelBuilder.Entity<AppUser>().HasIndex(x => x.Email).IsUnique();
         modelBuilder.Entity<Student>().HasIndex(x => x.UniversityNumber).IsUnique();
         modelBuilder.Entity<Course>().HasIndex(x => x.CourseCode).IsUnique();

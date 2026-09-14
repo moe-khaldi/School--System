@@ -1,5 +1,14 @@
 @model UniversityCourseEnrollment.Models.ViewModels.CourseDetailsViewModel
-@{ ViewData["Title"] = "Course Details"; }
+@{
+    ViewData["Title"] = "Course Details";
+    var activationDisabledReason = Model.Course.IsCancelled
+        ? "Cancelled courses cannot be activated."
+        : Model.Course.IsActive
+            ? "This course is already active."
+            : Model.Course.EndDate.Date < DateTime.UtcNow.Date
+                ? "This course has ended and cannot be activated."
+                : null;
+}
 
 @if (TempData["SuccessMessage"] is string success) { <div class="alert alert-success">@success</div> }
 @if (TempData["ErrorMessage"] is string error) { <div class="alert alert-danger">@error</div> }
@@ -14,6 +23,16 @@
 </dl>
 
 <div class="mb-4">
+    <form asp-action="ActivateCourse" asp-route-id="@Model.Course.CourseId" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn activate-course-btn"
+                disabled="@(activationDisabledReason is not null)"
+                aria-describedby="@(activationDisabledReason is not null ? "activation-disabled-reason" : null)">Activate course</button>
+    </form>
+    @if (activationDisabledReason is not null)
+    {
+        <p id="activation-disabled-reason" class="text-muted mt-2">@activationDisabledReason</p>
+    }
     <a asp-action="AssignTeacher" asp-route-courseId="@Model.Course.CourseId" class="btn btn-primary gold-btn">Assign teacher</a>
     <a asp-action="CourseAverage" asp-route-id="@Model.Course.CourseId" class="btn btn-outline-primary gold-btn">View average</a>
     @if (!Model.Course.IsCancelled)
@@ -27,7 +46,7 @@
 <h2>Assigned teachers</h2>
 <ul>@foreach (var assignment in Model.Course.CourseTeachers) { <li>@assignment.Teacher.AppUser.FullName</li> }</ul>
 <h2>Enrollments (@Model.Enrollments.TotalCount)</h2>
-<table class="table"><thead><tr><th>Student</th><th>Status</th><th>Grade</th></tr></thead><tbody>
-@foreach (var enrollment in Model.Enrollments.Items) { <tr><td>@enrollment.Student.AppUser.FullName</td><td>@enrollment.Status</td><td>@(enrollment.Grade?.ToString("0.##") ?? "Not graded")</td></tr> }
+<table class="table" id="courseEnrollmentsTable" data-page-sort><thead><tr><th data-sort-type="text">Student</th><th data-sort-type="date">Enrollment date</th><th>Status</th><th>Grade</th></tr></thead><tbody>
+@foreach (var enrollment in Model.Enrollments.Items) { <tr><td>@enrollment.Student.AppUser.FullName</td><td data-sort-value="@enrollment.EnrollmentDate.ToString("O")">@enrollment.EnrollmentDate.ToString("yyyy-MM-dd")</td><td>@enrollment.Status</td><td>@(enrollment.Grade?.ToString("0.##") ?? "Not graded")</td></tr> }
 </tbody></table>
 <partial name="_Pagination" model="Model.Enrollments" />

@@ -22,13 +22,13 @@
 </form>
 
 <div class="table-responsive">
-    <table class="table table-striped table-hover align-middle" id="coursesTable">
+    <table class="table table-striped table-hover align-middle" id="coursesTable" data-page-sort>
         <thead class="table-dark">
             <tr>
-                <th>Code</th>
-                <th>Name</th>
+                <th data-sort-type="text">Code</th>
+                <th data-sort-type="text">Name</th>
                 <th>Credit hours</th>
-                <th>Dates</th>
+                <th data-sort-type="date" data-sort-label="Start date">Dates</th>
                 <th>Status</th>
                 <th>Enrollments</th>
                 <th>Details</th>
@@ -41,7 +41,7 @@
                 <td>@course.CourseCode</td>
                 <td>@course.CourseName</td>
                 <td>@course.CreditHours</td>
-                <td>@course.StartDate.ToString("yyyy-MM-dd") to @course.EndDate.ToString("yyyy-MM-dd")</td>
+                <td data-sort-value="@course.StartDate.ToString("O")">@course.StartDate.ToString("yyyy-MM-dd") to @course.EndDate.ToString("yyyy-MM-dd")</td>
                 <td>
                     @if (course.IsCancelled)
                     {

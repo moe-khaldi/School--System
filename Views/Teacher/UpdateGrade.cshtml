@@ -15,3 +15,7 @@
     <button type="submit" class="btn btn-primary gold-btn">Save grade</button>
     <a asp-action="CourseStudents" asp-route-id="@Model.CourseId" class="btn btn-secondary gold-btn">Cancel</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

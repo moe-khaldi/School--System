@@ -93,7 +93,7 @@ public class AdminController : Controller
     [HttpGet]
     public async Task<IActionResult> CreateCourse()
     {
-        return View(new Course
+        return View(new CreateCourseViewModel
         {
             StartDate = DateTime.Today,
             EndDate = DateTime.Today.AddMonths(3),
@@ -103,40 +103,69 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateCourse(Course course)
+    public async Task<IActionResult> CreateCourse(CreateCourseViewModel model)
     {
-        if (!ModelState.IsValid) return View(course);
+        if (!ModelState.IsValid) return View(model);
+
+        var code = model.CourseCode.Trim();
+        if (await _context.Courses.AnyAsync(c => c.CourseCode == code))
+        {
+            ModelState.AddModelError(nameof(model.CourseCode), "Course code already exists.");
+            return View(model);
+        }
+
+        var course = new Course
+        {
+            CourseCode = code,
+            CourseName = model.CourseName.Trim(),
+            Description = model.Description?.Trim(),
+            CreditHours = model.CreditHours,
+            IsActive = false,
+            StartDate = model.StartDate!.Value,
+            EndDate = model.EndDate!.Value
+        };
 
         _context.Courses.Add(course);
-        await _context.SaveChangesAsync();
-        TempData["SuccessMessage"] = "Course created successfully.";
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (DatabaseErrors.IsDuplicate(ex))
+        {
+            _context.Entry(course).State = EntityState.Detached;
+            ModelState.AddModelError(nameof(model.CourseCode), "Course code already exists.");
+            return View(model);
+        }
+        TempData["SuccessMessage"] = "Course created as inactive. Review its details, then activate it when ready.";
         return RedirectToAction(nameof(CourseDetails), new { id = course.CourseId });
     }
 
     [HttpGet]
-    public async Task<IActionResult> CourseDetails(int id, int pageNumber = 1,
-        int pageSize = 10, CancellationToken cancellationToken = default)
+public async Task<IActionResult> CourseDetails(
+    int id,
+    int pageNumber = 1,
+    int pageSize = 10,
+    CancellationToken cancellationToken = default)
+{
+    var course = await _courseService.GetCourseDetails(id);
+    if (course is null) return NotFound();
+
+    var query = _context.Enrollments
+        .AsNoTracking()
+        .Where(e => e.CourseId == id)
+        .Include(e => e.Student)
+            .ThenInclude(s => s.AppUser)
+        .OrderBy(e => e.Student.AppUser.FullName)
+        .ThenBy(e => e.EnrollmentId);
+
+    return View(new CourseDetailsViewModel
     {
-        var course = await _context.Courses.AsNoTracking()
-            .Include(c => c.CourseTeachers)
-                .ThenInclude(ct => ct.Teacher)
-                    .ThenInclude(t => t.AppUser)
-            .FirstOrDefaultAsync(c => c.CourseId == id, cancellationToken);
-        if (course is null) return NotFound();
-
-        var enrollments = _context.Enrollments.AsNoTracking()
-            .Where(e => e.CourseId == id)
-            .Include(e => e.Student).ThenInclude(s => s.AppUser)
-            .OrderBy(e => e.Student.AppUser.FullName).ThenBy(e => e.EnrollmentId);
-
-        return View(new CourseDetailsViewModel
-        {
-            Course = course,
-            AverageGrade = await _courseService.GetCourseAverage(id),
-            Enrollments = await PaginatedList<Enrollment>.CreateAsync(
-                enrollments, pageNumber, pageSize, cancellationToken)
-        });
-    }
+        Course = course,
+        AverageGrade = await _courseService.GetCourseAverage(id),
+        Enrollments = await PaginatedList<Enrollment>.CreateAsync(
+            query, pageNumber, pageSize, cancellationToken)
+    });
+}
 
     [HttpGet]
     public async Task<IActionResult> AssignTeacher(int? courseId)
@@ -157,10 +186,15 @@ public class AdminController : Controller
             return View(model);
         }
 
-        var assigned = await _courseService.AssignTeacherToCourse(model.TeacherId, model.CourseId);
-        TempData[assigned ? "SuccessMessage" : "ErrorMessage"] = assigned
-            ? "Teacher assigned successfully."
-            : "This teacher is already assigned to this course.";
+        var (assigned, message) = await _courseService.AssignTeacherToCourse(model.TeacherId, model.CourseId);
+        if (!assigned)
+        {
+            ModelState.AddModelError(string.Empty, message);
+            ViewBag.Courses = await _context.Courses.OrderBy(c => c.CourseCode).ToListAsync();
+            ViewBag.Teachers = await _context.Teachers.Include(t => t.AppUser).OrderBy(t => t.AppUser.FullName).ToListAsync();
+            return View(model);
+        }
+        TempData["SuccessMessage"] = message;
         return RedirectToAction(nameof(CourseDetails), new { id = model.CourseId });
     }
 
@@ -188,6 +222,15 @@ public class AdminController : Controller
         var course = await _context.Courses.FirstOrDefaultAsync(c => c.CourseId == id);
         if (course is null) return NotFound();
         return View(new CourseDetailsViewModel { Course = course, AverageGrade = await _courseService.GetCourseAverage(id) });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ActivateCourse(int id)
+    {
+        var result = await _courseService.ActivateCourse(id);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(CourseDetails), new { id });
     }
 
     [HttpPost]

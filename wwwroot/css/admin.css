@@ -202,6 +202,23 @@
         max-width: 400px;
     }
 }
+.admin-shell .activate-course-btn {
+    --bs-btn-color: #198754;
+    --bs-btn-bg: #fff;
+    --bs-btn-border-color: #198754;
+    --bs-btn-hover-color: #146c43;
+    --bs-btn-hover-bg: #fff;
+    --bs-btn-hover-border-color: #146c43;
+    --bs-btn-active-color: #146c43;
+    --bs-btn-active-bg: #fff;
+    --bs-btn-active-border-color: #146c43;
+    --bs-btn-focus-shadow-rgb: 25, 135, 84;
+    --bs-btn-disabled-color: #6c757d;
+    --bs-btn-disabled-bg: #e9ecef;
+    --bs-btn-disabled-border-color: #ced4da;
+    --bs-btn-disabled-opacity: 1;
+}
+
 .lower-dashboard-cards {
    border: none;
 }

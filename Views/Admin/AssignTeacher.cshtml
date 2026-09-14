@@ -7,7 +7,13 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <label asp-for="CourseId" class="form-label">Course</label>
     <select asp-for="CourseId" class="form-select"><option value="">Choose a course</option>@foreach (var course in courses) { <option value="@course.CourseId">@course.CourseCode - @course.CourseName</option> }</select>
+    <span asp-validation-for="CourseId" class="text-danger"></span>
     <label asp-for="TeacherId" class="form-label mt-3">Teacher</label>
     <select asp-for="TeacherId" class="form-select"><option value="">Choose a teacher</option>@foreach (var teacher in teachers) { <option value="@teacher.TeacherId">@teacher.AppUser.FullName</option> }</select>
+    <span asp-validation-for="TeacherId" class="text-danger"></span>
     <button class="btn btn-primary mt-3 gold-btn" type="submit">Assign teacher</button>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

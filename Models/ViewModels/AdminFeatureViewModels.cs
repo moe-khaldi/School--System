@@ -13,10 +13,10 @@ public class CourseDetailsViewModel
 
 public class AssignTeacherViewModel
 {
-    [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Choose a valid course.")]
     public int CourseId { get; set; }
 
-    [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Choose a valid teacher.")]
     public int TeacherId { get; set; }
 }
 

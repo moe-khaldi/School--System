@@ -49,6 +49,7 @@ public class StudentController : Controller
 
         return View(new StudentCoursesViewModel
         {
+            StudentId = student.StudentId,
             StudentName = User.Identity?.Name ?? "Student",
             Courses = await _enrollmentService.GetOpenCourses()
         });

@@ -9,7 +9,7 @@
 @if (TempData["SuccessMessage"] is string success) { <div class="alert alert-success">@success</div> }
 @if (TempData["ErrorMessage"] is string error) { <div class="alert alert-danger">@error</div> }
 
-<div class="card p-3 mb-3">
+<div class="card p-3 mb-3 dashboard-cards">
     <h2>@Model.EnrollmentCount</h2>
     <p>Course enrollments</p>
 </div>

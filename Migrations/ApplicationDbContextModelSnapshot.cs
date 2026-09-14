@@ -100,7 +100,12 @@ namespace UniversityCourseEnrollment.Migrations
                     b.HasIndex("CourseCode")
                         .IsUnique();
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Courses_CreditHours", "[CreditHours] BETWEEN 1 AND 6");
+
+                            t.HasCheckConstraint("CK_Courses_Dates", "[EndDate] > [StartDate]");
+                        });
                 });
 
             modelBuilder.Entity("UniversityCourseEnrollment.Models.CourseTeacher", b =>
@@ -169,7 +174,12 @@ namespace UniversityCourseEnrollment.Migrations
                     b.HasIndex("StudentId", "CourseId")
                         .IsUnique();
 
-                    b.ToTable("Enrollments");
+                    b.ToTable("Enrollments", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Enrollments_Dates", "[EnrollmentEndDate] > [EnrollmentStartDate]");
+
+                            t.HasCheckConstraint("CK_Enrollments_Grade", "[Grade] IS NULL OR [Grade] BETWEEN 0 AND 100");
+                        });
                 });
 
             modelBuilder.Entity("UniversityCourseEnrollment.Models.Student", b =>
